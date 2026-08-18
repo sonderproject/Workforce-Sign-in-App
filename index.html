@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Employment Center Check-In</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✅</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -27,9 +30,10 @@
 <section id="screen-home" class="screen kiosk-bg" hidden>
   <div class="card">
     <div class="brand-header">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
       <p class="eyebrow">Employment Center</p>
-      <h1>Check&nbsp;In</h1>
-      <p>Enter your information to get started.</p>
+      <h1>Welcome</h1>
+      <p>Enter your details to check in.</p>
     </div>
     <form id="form-identify">
       <label class="field"><span class="lbl">First Name</span>
@@ -48,6 +52,7 @@
 <section id="screen-welcome" class="screen kiosk-bg" hidden>
   <div class="card center">
     <div class="brand-header">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
       <p class="eyebrow">Employment Center</p>
       <h1>Welcome back,<br><span id="welcome-name"></span>!</h1>
       <p>You're already signed up. Just check the box to sign in for today.</p>
@@ -65,9 +70,10 @@
 <section id="screen-intake" class="screen kiosk-bg" hidden>
   <div class="card">
     <div class="brand-header">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
       <p class="eyebrow">Employment Center</p>
       <h1 id="intake-title">New Client Sign-Up</h1>
-      <p>First time here? Please answer a few questions to sign up, then you're checked in.</p>
+      <p>First time here? Answer a few questions to sign up — then you're checked in.</p>
     </div>
     <form id="form-intake">
       <label class="field"><span class="lbl">First Name</span>
