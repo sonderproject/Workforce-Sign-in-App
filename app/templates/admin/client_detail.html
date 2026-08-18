@@ -1,0 +1,81 @@
+{% extends "admin/_layout.html" %}
+{% set active = 'clients' %}
+{% block title %}{{ client['first_name'] }} {{ client['last_name'] }}{% endblock %}
+
+{% macro sel(name, choices, current) %}
+<select name="{{ name }}">
+  <option value="">—</option>
+  {% for value, label in choices %}
+    <option value="{{ value }}" {% if current == value %}selected{% endif %}>{{ label }}</option>
+  {% endfor %}
+</select>
+{% endmacro %}
+
+{% block admin %}
+<p style="margin-top:8px"><a href="{{ url_for('admin_clients') }}">← Back to clients</a></p>
+<h2 class="section" style="margin-top:6px">{{ client['first_name'] }} {{ client['last_name'] }}</h2>
+
+<div class="panel">
+  <h3>Client record</h3>
+  <p class="hint">Correct obvious data-entry mistakes in the permanent identity record.</p>
+  <form method="post" action="{{ url_for('admin_client_edit', client_id=client['id']) }}">
+    <div class="form-grid">
+      <label class="field"><span class="lbl">First Name</span>
+        <input type="text" name="first_name" value="{{ client['first_name'] }}"></label>
+      <label class="field"><span class="lbl">Last Name</span>
+        <input type="text" name="last_name" value="{{ client['last_name'] }}"></label>
+      <label class="field"><span class="lbl">Date of Birth</span>
+        <input type="date" name="date_of_birth" value="{{ client['date_of_birth'] }}"></label>
+      <label class="field"><span class="lbl">UID</span>
+        <input type="text" name="uid" value="{{ client['uid'] or '' }}"></label>
+    </div>
+    <button class="btn" style="width:auto;padding:14px 26px">Save client</button>
+  </form>
+</div>
+
+<h2 class="section">Monthly intake history</h2>
+{% if intakes %}
+  {% for it in intakes %}
+  <div class="panel">
+    <h3>{{ it['reporting_month'] | month_name }} {{ it['reporting_year'] }}</h3>
+    <form method="post" action="{{ url_for('admin_intake_edit', intake_id=it['id']) }}">
+      <div class="form-grid">
+        <label class="field"><span class="lbl">Veteran</span>{{ sel('veteran', [('1','Yes'),('0','No')], it['veteran']|string) }}</label>
+        <label class="field"><span class="lbl">Hispanic</span>{{ sel('hispanic', [('1','Yes'),('0','No')], it['hispanic']|string) }}</label>
+        <label class="field"><span class="lbl">Race</span>{{ sel('race', RACE_CHOICES, it['race']) }}</label>
+        <label class="field"><span class="lbl">Household Size</span>
+          <input type="number" name="house_size" min="1" value="{{ it['house_size'] or '' }}"></label>
+        <label class="field"><span class="lbl">Household Type</span>{{ sel('household_type', HOUSEHOLD_TYPE_CHOICES, it['household_type']) }}</label>
+        <label class="field"><span class="lbl">Population</span>{{ sel('population_category', POPULATION_CHOICES, it['population_category']) }}</label>
+        <label class="field"><span class="lbl">Female Head</span>{{ sel('female_head', [('1','Yes'),('0','No')], it['female_head']|string) }}</label>
+        <label class="field"><span class="lbl">Disabled</span>{{ sel('disabled', [('1','Yes'),('0','No')], it['disabled']|string) }}</label>
+      </div>
+      <button class="btn ghost" style="width:auto;padding:12px 24px">Save {{ it['reporting_month'] | month_name }} correction</button>
+    </form>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="panel"><p class="hint">No monthly intakes recorded yet.</p></div>
+{% endif %}
+
+<h2 class="section">Visit / check-in history</h2>
+<div class="panel">
+  {% if visits %}
+  <table class="data">
+    <thead><tr><th>Date</th><th>Time</th><th>Type</th><th>Services</th></tr></thead>
+    <tbody>
+      {% for v in visits %}
+      <tr>
+        <td>{{ v['visit_date'] | fmt_dob }}</td>
+        <td>{{ v['visit_time'] }}</td>
+        <td>{{ v['visitor_type'] or '—' }}</td>
+        <td>{{ v['services'] or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="hint">No visits recorded yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

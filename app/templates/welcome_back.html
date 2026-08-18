@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block body_class %}kiosk-page{% endblock %}
+{% block title %}Welcome Back{% endblock %}
+{% block content %}
+<div class="card done-hero">
+  <div class="brand-header">
+    <p class="eyebrow">Employment Center</p>
+    <h1>Welcome back,<br>{{ client['first_name'] }}!</h1>
+    <p>You've already completed this month's intake. Just check in.</p>
+  </div>
+  <form method="post" action="{{ url_for('checkin', client_id=client['id']) }}" data-guard>
+    <button type="submit" class="btn big green">CHECK&nbsp;IN</button>
+  </form>
+  <a class="subtle-link" href="{{ url_for('home') }}">Not you? Start over</a>
+</div>
+{% endblock %}

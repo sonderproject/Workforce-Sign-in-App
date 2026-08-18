@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body_class %}kiosk-page{% endblock %}
+{% block title %}Checked In{% endblock %}
+{% block content %}
+<div class="card done-hero">
+  <div class="check-circle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"
+         stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+  </div>
+  <h1>You're checked in.</h1>
+  <p>{% if name %}Thank you, {{ name }}.{% else %}Thank you.{% endif %}</p>
+  <p class="hint" style="margin-top:18px;color:var(--muted)">Returning to the home screen…</p>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>setTimeout(function(){ window.location.href = "{{ url_for('home') }}"; }, 5000);</script>
+{% endblock %}

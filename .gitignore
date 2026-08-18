@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Runtime data & PII — never commit real client data or workbooks
+data/app.db
+data/uploads/
+data/reporting.xlsx
+backups/
+*.xlsx
