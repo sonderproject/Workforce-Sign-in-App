@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Employment Center Check-In</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✅</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div id="toast" class="toast" hidden></div>
+
+<!-- ============ NOT READY (no workbook loaded) ============ -->
+<section id="screen-notready" class="screen kiosk-bg" hidden>
+  <div class="card center">
+    <div class="brand-header">
+      <p class="eyebrow">Employment Center</p>
+      <h1>Getting set up…</h1>
+      <p>A staff member needs to load this month's Excel workbook before check-in can start.</p>
+    </div>
+    <button class="btn big" data-go="staff">Staff: Load Workbook</button>
+  </div>
+</section>
+
+<!-- ============ HOME / CHECK-IN ============ -->
+<section id="screen-home" class="screen kiosk-bg" hidden>
+  <div class="card">
+    <div class="brand-header">
+      <p class="eyebrow">Employment Center</p>
+      <h1>Check&nbsp;In</h1>
+      <p>Enter your information to get started.</p>
+    </div>
+    <form id="form-identify">
+      <label class="field"><span class="lbl">First Name</span>
+        <input type="text" name="first_name" autocomplete="off" required></label>
+      <label class="field"><span class="lbl">Last Name</span>
+        <input type="text" name="last_name" autocomplete="off" required></label>
+      <label class="field"><span class="lbl">Date of Birth</span>
+        <input type="date" name="date_of_birth" required></label>
+      <button type="submit" class="btn big green">Continue</button>
+    </form>
+  </div>
+  <a class="subtle-link" data-go="staff">Staff sign-in</a>
+</section>
+
+<!-- ============ WELCOME BACK (returning: just confirm) ============ -->
+<section id="screen-welcome" class="screen kiosk-bg" hidden>
+  <div class="card center">
+    <div class="brand-header">
+      <p class="eyebrow">Employment Center</p>
+      <h1>Welcome back,<br><span id="welcome-name"></span>!</h1>
+      <p>You're already signed up. Just check the box to sign in for today.</p>
+    </div>
+    <label class="tile confirm" id="confirm-tile">
+      <input type="checkbox" id="confirm-here"><span class="dot"></span>
+      <span>Yes, I'm here today</span>
+    </label>
+    <button id="btn-checkin" class="btn big green" disabled>Sign In</button>
+    <a class="subtle-link" data-go="home">Not you? Start over</a>
+  </div>
+</section>
+
+<!-- ============ INTAKE FORM ============ -->
+<section id="screen-intake" class="screen kiosk-bg" hidden>
+  <div class="card">
+    <div class="brand-header">
+      <p class="eyebrow">Employment Center</p>
+      <h1 id="intake-title">New Client Sign-Up</h1>
+      <p>First time here? Please answer a few questions to sign up, then you're checked in.</p>
+    </div>
+    <form id="form-intake">
+      <label class="field"><span class="lbl">First Name</span>
+        <input type="text" name="first_name" required></label>
+      <label class="field"><span class="lbl">Last Name</span>
+        <input type="text" name="last_name" required></label>
+      <label class="field"><span class="lbl">Date of Birth</span>
+        <input type="date" name="date_of_birth" required></label>
+      <label class="field"><span class="lbl">UID (if applicable)</span>
+        <input type="text" name="uid" autocomplete="off"></label>
+
+      <div class="group" data-group="veteran">
+        <div class="legend">Veteran?</div>
+        <div class="tiles">
+          <label class="tile"><input type="radio" name="veteran" value="1"><span class="dot"></span><span>Yes</span></label>
+          <label class="tile"><input type="radio" name="veteran" value="0" checked><span class="dot"></span><span>No</span></label>
+        </div>
+      </div>
+
+      <div class="group" data-group="hispanic">
+        <div class="legend">Hispanic / Latino?</div>
+        <div class="tiles">
+          <label class="tile"><input type="radio" name="hispanic" value="1"><span class="dot"></span><span>Yes</span></label>
+          <label class="tile"><input type="radio" name="hispanic" value="0" checked><span class="dot"></span><span>No</span></label>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="legend">Race</div>
+        <div class="tiles">
+          <label class="tile"><input type="radio" name="race" value="white"><span class="dot"></span><span>White</span></label>
+          <label class="tile"><input type="radio" name="race" value="black"><span class="dot"></span><span>Black</span></label>
+          <label class="tile"><input type="radio" name="race" value="asian"><span class="dot"></span><span>Asian</span></label>
+          <label class="tile"><input type="radio" name="race" value="american_indian"><span class="dot"></span><span>American Indian</span></label>
+          <label class="tile"><input type="radio" name="race" value="other_multi"><span class="dot"></span><span>Other / Multi</span></label>
+        </div>
+      </div>
+
+      <label class="field"><span class="lbl">Household Size</span>
+        <input type="number" name="house_size" min="1" max="30" inputmode="numeric"></label>
+
+      <div class="group">
+        <div class="legend">Household Type</div>
+        <div class="tiles">
+          <label class="tile"><input type="radio" name="household_type" value="single_non_elderly"><span class="dot"></span><span>Single, Non-Elderly</span></label>
+          <label class="tile"><input type="radio" name="household_type" value="elderly"><span class="dot"></span><span>Elderly (62+)</span></label>
+          <label class="tile"><input type="radio" name="household_type" value="single_parent"><span class="dot"></span><span>Single Parent</span></label>
+          <label class="tile"><input type="radio" name="household_type" value="two_parent"><span class="dot"></span><span>Two Parent</span></label>
+          <label class="tile"><input type="radio" name="household_type" value="other"><span class="dot"></span><span>Other</span></label>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="legend">Population Category</div>
+        <div class="tiles">
+          <label class="tile"><input type="radio" name="population_category" value="adult"><span class="dot"></span><span>Adult</span></label>
+          <label class="tile"><input type="radio" name="population_category" value="tay"><span class="dot"></span><span>TAY (18-24)</span></label>
+          <label class="tile"><input type="radio" name="population_category" value="family_with_minor"><span class="dot"></span><span>Family With Minor</span></label>
+          <label class="tile"><input type="radio" name="population_category" value="senior"><span class="dot"></span><span>Senior</span></label>
+        </div>
+      </div>
+
+      <div class="group" data-group="female_head">
+        <div class="legend">Female Head of Household?</div>
+        <div class="tiles">
+          <label class="tile"><input type="radio" name="female_head" value="1"><span class="dot"></span><span>Yes</span></label>
+          <label class="tile"><input type="radio" name="female_head" value="0" checked><span class="dot"></span><span>No</span></label>
+        </div>
+      </div>
+
+      <div class="group" data-group="disabled">
+        <div class="legend">Disabled?</div>
+        <div class="tiles">
+          <label class="tile"><input type="radio" name="disabled" value="1"><span class="dot"></span><span>Yes</span></label>
+          <label class="tile"><input type="radio" name="disabled" value="0" checked><span class="dot"></span><span>No</span></label>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="legend">Visitor Type</div>
+        <div class="tiles">
+          <label class="tile"><input type="radio" name="visitor_type" value="resident"><span class="dot"></span><span>Resident (Lot O / Program)</span></label>
+          <label class="tile"><input type="radio" name="visitor_type" value="walk_in" checked><span class="dot"></span><span>Walk-In / Community Guest</span></label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn big green">Sign Up &amp; Check In</button>
+      <a class="subtle-link" data-go="home">Cancel</a>
+    </form>
+  </div>
+</section>
+
+<!-- ============ DONE ============ -->
+<section id="screen-done" class="screen kiosk-bg" hidden>
+  <div class="card center">
+    <div class="check-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"
+           stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    </div>
+    <h1>You're checked in.</h1>
+    <p id="done-name">Thank you.</p>
+    <p class="muted" style="margin-top:16px">Returning to the home screen…</p>
+  </div>
+</section>
+
+<!-- ============ STAFF / ADMIN ============ -->
+<section id="screen-staff" class="screen admin-bg" hidden>
+  <header class="topbar"><div class="topbar-inner">
+    <span class="logo">Employment Center · Staff</span>
+    <nav><a data-go="home">← Back to Kiosk</a></nav>
+  </div></header>
+
+  <div class="admin-shell">
+    <div class="panel">
+      <h3>Workbook</h3>
+      <p class="hint" id="wb-status">No workbook loaded.</p>
+      <div class="dropzone" id="dropzone">
+        <div class="big-icon">📄⬇️</div>
+        <p>Drop your Excel workbook here, or click to browse</p>
+        <small>.xlsx only · nothing is uploaded — it stays on this device</small>
+        <div class="filename" id="wb-filename"></div>
+        <input type="file" id="wb-input" accept=".xlsx" hidden>
+      </div>
+      <div class="inline-actions" style="margin-top:16px">
+        <button class="btn" id="btn-download">⬇ Download updated workbook</button>
+        <button class="btn ghost" id="btn-clear">Clear this device</button>
+      </div>
+    </div>
+
+    <h2 class="section">Today</h2>
+    <p class="muted" id="today-label" style="margin-top:-6px"></p>
+    <div class="stat-grid" id="stat-grid"></div>
+
+    <div class="panel" style="margin-top:26px">
+      <h3>How this works</h3>
+      <p class="hint">All data lives in your Excel workbook — nothing is stored on any server.
+      New clients answer the sign-up questions once (written to the <strong>Intakes</strong> sheet);
+      every visit is added to the <strong>Sign Ins</strong> sheet. The workbook is kept on this
+      device so sign-ins continue all day. Click <strong>Download updated workbook</strong> to save
+      it back to your files whenever you like.</p>
+    </div>
+  </div>
+</section>
+
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

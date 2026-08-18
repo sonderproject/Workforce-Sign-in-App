@@ -1,93 +1,74 @@
-# Employment Center — Client Intake & Check-In
+# Employment Center — Sign-In Sheet
 
-A simple, touch-friendly local web app that replaces manual sign-in/intake entry
-while continuing to populate the existing monthly Excel reporting workbook.
+A dead-simple, touch-friendly sign-in page. **Nothing is stored on any server.**
+All data lives in your Excel workbook, which is read and written entirely in the
+browser and kept on the device so sign-ins continue through the day.
 
-## What it does
+## How it works
 
-- **Kiosk check-in** clients use themselves. They enter First Name, Last Name,
-  and Date of Birth. The app then decides:
-  - **New client** → full monthly intake.
-  - **Existing client, no intake this calendar month** → *Monthly Intake
-    Required*, prefilled from their most recent intake to review/update.
-  - **Existing client, intake already done this month** → *Welcome back* → one
-    big **CHECK IN** button.
-- **Every physical visit** (including the first) creates a separate Visit record.
-- **One Monthly Intake per client per calendar month** — enforced in the DB on
-  `client_id + reporting_year + reporting_month`. Historical months are never
-  altered when a client updates info in a later month.
-- **Excel export** into the existing workbook, preserving its exact column
-  structure and `1`/blank coding (see below).
-- **Admin dashboard** for staff: daily/monthly stats, client search & history,
-  correcting data-entry mistakes, and exporting to Excel — including a
-  **drag-and-drop** uploader: drop the month's workbook, the app writes the
-  data into the correct sheets and hands it back to download.
+1. **Staff** opens the page and loads the month's Excel workbook (drag & drop).
+   It stays on the device — it is never uploaded anywhere.
+2. A client enters **First Name, Last Name, Date of Birth**:
+   - **New client** → answers the sign-up questions once. Their answers are
+     written to the **Intakes** sheet (using the workbook's exact demographic
+     columns and `1`/blank coding), and today's visit is logged.
+   - **Returning client** → sees *Welcome back*, ticks **"Yes, I'm here today"**,
+     and taps **Sign In**. Only a visit row is added — no repeat questions.
+3. Every visit is appended to the **Sign Ins** sheet (Date, Time, Name, DOB,
+   Visitor Type).
+4. Staff clicks **Download updated workbook** anytime to save it back to their
+   files.
 
-## Excel coding (discovered from the workbook, not assumed)
+A client counts as "signed up" once they have a row in the **Intakes** sheet.
+Matching is case- and whitespace-insensitive on name + date of birth.
 
-Inspecting `Feb. Numbers Final(1).xlsx` showed:
+## Excel coding (taken from the existing workbook, not assumed)
 
-| Concept | Representation in the workbook |
-|---|---|
-| Demographic / category columns (Veteran, Hispanic, race, household type, population, Female Head, Disabled) | `1` when it applies, **blank** otherwise |
-| House Size | actual integer |
-| Large numbers at the bottom of a sheet | `=SUM()` **totals rows**, not client data |
-| Race / Household type / Population | single-select (exactly one `1` per client) |
+- Demographic/category columns are `1` when they apply and **blank** otherwise
+  (there is no Yes=1/No=2 scheme).
+- `House Size` is a real integer.
+- A `TOTALS` row with `SUM()` formulas is written under the data.
+- Header spellings are preserved verbatim (`Veteren`, `Two Parent ` with a
+  trailing space, `American India`, `Fam. With Minor`, `Female Head of`).
+- All existing/historical sheets in the workbook are preserved untouched.
 
-There is **no** `Yes=1 / No=2` scheme. Header spellings are preserved verbatim
-(`Veteren`, `Two Parent ` with a trailing space, `American India`,
-`Fam. With Minor`, `Female Head of`). The canonical new-month layout follows the
-workbook's newest, cleanest sheet, **June Complete** (the only one with a UID
-column). All mapping lives in [`app/mapping.py`](app/mapping.py) as
-`form answer → reporting category → Excel column/value`.
+## Deploying to Vercel
 
-## How Excel writes stay duplicate-free
+This is a **static site** — no server, no database, no build step.
 
-The database is the source of truth. For the current reporting month the app
-owns two sheets — `"<Month> <Year>"` and `"<Month> <Year> Sign Ins"` — and
-**rebuilds them from the database** on each sync. Rebuilding is idempotent, so
-it can never create duplicate intake rows or duplicate visits, and it leaves
-every historical sheet completely untouched. A timestamped backup is written to
-`backups/` before every save.
+- **Framework Preset: `Other`** (not Flask). Build Command: none.
+  Output Directory: `.` (repo root). A `vercel.json` sets this for you.
+- Just import the repo and deploy. That's it.
 
-## Run it
+## Run locally
+
+Any static file server works, e.g.:
 
 ```bash
-pip install -r requirements.txt
-python run.py
-# Kiosk:  http://127.0.0.1:5000/
-# Admin:  http://127.0.0.1:5000/admin
+python3 -m http.server 8000
+# open http://localhost:8000
 ```
 
-The app keeps a working copy of the workbook at `data/reporting.xlsx` and the
-SQLite database at `data/app.db`.
-
-## Tests
-
-```bash
-python -m pytest -q
-```
-
-Covers the six required scenarios: new client full intake, same client returning
-in the same month (visit only, no duplicate demographic row), same client next
-month (intake required, prefilled, history unchanged), exact demographic coding,
-double-click duplicate protection, and workbook backup.
-
-## Project layout
+## Files
 
 ```
-app/
-  main.py                 Flask routes (kiosk + admin)
-  database.py             SQLite schema & connection
-  models.py               normalization / parsing helpers
-  mapping.py              form → reporting category → Excel column/value
-  services/
-    client_service.py     identity: match / create / update / search
-    intake_service.py     one monthly intake per client per month
-    checkin_service.py     visit records (+ double-click dedupe)
-    excel_service.py      backup, sheet resolution, coded writes
-  templates/  static/     kiosk + admin UI
-data/    app.db, reporting.xlsx, uploads/
-backups/  timestamped workbook backups
-tests/   test_workflow.py
+index.html            all screens (kiosk + staff)
+assets/style.css      styling
+assets/app.js         all logic (reads/writes the workbook in-browser)
+vendor/xlsx.full.min.js  SheetJS (bundled — no CDN, works offline)
+vercel.json           static-site config
 ```
+
+## Notes & limits
+
+- Data persists on the device via the browser (IndexedDB). Use **Download
+  updated workbook** to keep a real copy; **Clear this device** wipes the local
+  copy. Because it's per-device, run sign-in on one kiosk device (or download/
+  re-load the workbook to move between devices).
+- The bundled spreadsheet library preserves cell **values and formulas** on all
+  sheets, but heavy cell **styling** (colors/borders) on historical sheets may
+  not survive a round-trip. The reporting structure, headers, coding, and totals
+  are preserved.
+- Sign-up questions are asked once per client (not re-collected monthly). If you
+  later want the monthly "Numbers" tabs auto-populated per month, that's a small
+  addition.
